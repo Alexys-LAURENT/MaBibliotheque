@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Switch } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, NavbarMenuToggle, NavbarMenu, Switch } from "@nextui-org/react";
 import type { User } from '../types/user';
 import Avatar from './Avatar';
 import { signOut } from "next-auth/react";

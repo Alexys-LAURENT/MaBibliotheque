@@ -1,5 +1,5 @@
 "use client"
-import { Autocomplete, AutocompleteItem, Card, Link } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Link } from "@nextui-org/react";
 import { useAsyncList } from "@react-stately/data";
 import Loupe from '../lib/Loupe.svg';
 import { useRef, useState } from 'react';
@@ -10,7 +10,6 @@ const SearchBar = () => {
         async load({ signal, filterText }) {
             if (!filterText) return { items: [] };
             const result = await booksApi.getBookByName(filterText);
-            console.log(result)
             const items = result.items || [];
             const uniqueItems = items.reduce((unique: any, item: any) => {
                 const isUnique = !unique.some((obj: any) => obj.id === item.id);

@@ -33,19 +33,14 @@ export const UserBooksProvider = ({ children }: { children: React.ReactNode }) =
     const [readingNowBooks, setReadingNowBooks] = useState<Book[] | null>(null);
 
     useEffect(() => {
-        console.log("CONTEXT USE EFFECT");
 
         // Exécuter le code uniquement si ce n'est pas encore initialisé
         if (!initialized && session?.user) {
             const fetchData = async () => {
                 const favBooksRes = await booksApi.getBooksFromShelf(bookShels.Favorites, session.user.accessToken);
-                console.log("CONTEXT FAV BOOKS");
                 const toReadBooksRes = await booksApi.getBooksFromShelf(bookShels.To_read, session.user.accessToken);
-                console.log("CONTEXT TO READ BOOKS");
                 const haveReadBooksRes = await booksApi.getBooksFromShelf(bookShels.Have_read, session.user.accessToken);
-                console.log("CONTEXT HAVE READ BOOKS");
                 const readingNowBooksRes = await booksApi.getBooksFromShelf(bookShels.Reading_now, session.user.accessToken);
-                console.log("CONTEXT READING NOW BOOKS");
                 setFavBooks(favBooksRes.items || []);
                 setToReadBooks(toReadBooksRes.items || []);
                 setHaveReadBooks(haveReadBooksRes.items || []);

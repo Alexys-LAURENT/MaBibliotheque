@@ -1,6 +1,5 @@
 import React from 'react';
 import booksApi from '../utils/fetchBookApi';
-import BookCard from '../components/BookCard';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]/route';
 import DiscoverSearchBooks from '../components/DiscoverSearchBooks';

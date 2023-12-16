@@ -2,7 +2,6 @@
 import React, { useContext } from 'react';
 import BookCard from '../components/BookCard';
 import { UserBooksContext } from '../context/UserBooksContext';
-import { UserBooksContextProps } from '../context/UserBooksContext';
 import { Spinner } from '@nextui-org/react';
 const Favoris = () => {
     const { favBooks } = useContext(UserBooksContext);

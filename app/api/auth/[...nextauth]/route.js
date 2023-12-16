@@ -2,7 +2,6 @@ import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
 
 async function refreshAccessToken(token) {
-    console.log("////////////////REFRESH//////////////////////");
     try {
         const url =
             "https://oauth2.googleapis.com/token?" +
@@ -21,7 +20,6 @@ async function refreshAccessToken(token) {
         })
 
         const refreshedTokens = await response.json()
-        console.log("REFRESHED TOKENS", refreshedTokens);
 
         if (!response.ok) {
             throw refreshedTokens
@@ -68,13 +66,6 @@ export const authOptions = {
     callbacks: {
         async jwt({ token, account, user, profile, isNewUser }) {
             // Persist the OAuth access_token and or the user id to the token right after signin
-            console.log("////////////////JWT//////////////////////");
-            console.log("JWT TOKEN", token);
-            console.log("JWT ACCOUNT", account);
-
-            console.log("JWT USER", user);
-            console.log("JWT PROFILE", profile);
-            console.log("JWT IS NEW USER", isNewUser);
 
             if (account?.access_token) {
                 token.accessToken = account.access_token;
@@ -85,7 +76,6 @@ export const authOptions = {
             }
 
             if (account && user) {
-                console.log("Token returned");
                 return token;
             }
 
@@ -93,13 +83,11 @@ export const authOptions = {
                 const d = new Date(0);
                 d.setUTCSeconds(account.expires_at);
                 if (Date.now() < d) {
-                    console.log("Token not expired");
                     return token;
                 }
             }
 
 
-            console.log("Token expired");
             return refreshAccessToken(token);
 
 
@@ -108,7 +96,6 @@ export const authOptions = {
 
         },
         async session({ session, token }) {
-            console.log("SESSION", session, token);
             // Send properties to the client, like an access_token and user id from a provider.
             session.user.accessToken = token.accessToken
             session.user.refreshToken = token.refreshToken
