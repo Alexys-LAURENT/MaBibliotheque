@@ -22,8 +22,8 @@ const config: Config = {
         bb_bgLight: "#F1F1F1",
         bb_textDark: "#323232",
         bb_textLight: "#F1F1F1",
-        bb_secondary: '#e9d022',
-        bb_third: '#e60b09',
+        bb_secondary: '#ff1b6b',
+        bb_third: '#45caff',
 
         bb_text: '#D4D4D4',
         bb_primary: '#252525',

@@ -17,6 +17,7 @@ export interface UserBooksContextProps {
     haveReadBooks: Book[] | null;
     readingNowBooks: Book[] | null;
     toggleInShelf: (book: Book, shelf: number) => void;
+    removeFromShelf: (book: Book) => void;
 }
 
 export const UserBooksContext = createContext<UserBooksContextProps>({} as UserBooksContextProps);
@@ -85,61 +86,62 @@ export const UserBooksProvider = ({ children }: { children: React.ReactNode }) =
         }
     }
 
+    const isInShelf = (book: Book, shelfBooks: Book[] | null) => (
+        shelfBooks && shelfBooks.length > 0 && shelfBooks.some((shelfBook: any) => shelfBook.id === book.id)
+    );
+
+    const deleteFromShelf = async (book: Book, shelfType: number, setShelf: React.Dispatch<React.SetStateAction<Book[] | null>>) => {
+        try {
+            const res = await booksApi.deleteBookFromShelf(book.id, shelfType, session!.user.accessToken);
+            if (Object.keys(res).length === 0) {
+                setShelf((prevShelf) => (prevShelf ? prevShelf.filter((prevBook: any) => prevBook.id !== book.id) : null));
+            }
+        } catch (error) {
+            console.error("Error deleting from shelf:", error);
+        }
+    };
+
+    const addToShelf = async (book: Book, shelfType: number, setShelf: React.Dispatch<React.SetStateAction<Book[] | null>>) => {
+        try {
+            const res = await booksApi.addBookToBookShelve(book.id, shelfType, session!.user.accessToken);
+            if (Object.keys(res).length === 0) {
+                setShelf((prevShelf) => (prevShelf === null ? [book] : [...prevShelf, book]));
+            }
+        } catch (error) {
+            console.error("Error adding to shelf:", error);
+        }
+    };
+
     const toggleInShelf = async (book: Book, shelf: number) => {
         if (!session?.user) return;
 
-        const isInShelf = (shelfBooks: Book[] | null) => (
-            shelfBooks && shelfBooks.length > 0 && shelfBooks.some((shelfBook: any) => shelfBook.id === book.id)
-        );
 
-        const deleteFromShelf = async (shelfType: number, setShelf: React.Dispatch<React.SetStateAction<Book[] | null>>) => {
-            try {
-                const res = await booksApi.deleteBookFromShelf(book.id, shelfType, session!.user.accessToken);
-                if (Object.keys(res).length === 0) {
-                    setShelf((prevShelf) => (prevShelf ? prevShelf.filter((prevBook: any) => prevBook.id !== book.id) : null));
-                }
-            } catch (error) {
-                console.error("Error deleting from shelf:", error);
-            }
-        };
-
-        const addToShelf = async (shelfType: number, setShelf: React.Dispatch<React.SetStateAction<Book[] | null>>) => {
-            try {
-                const res = await booksApi.addBookToBookShelve(book.id, shelfType, session.user.accessToken);
-                if (Object.keys(res).length === 0) {
-                    setShelf((prevShelf) => (prevShelf === null ? [book] : [...prevShelf, book]));
-                }
-            } catch (error) {
-                console.error("Error adding to shelf:", error);
-            }
-        };
-
-        if (isInShelf(toReadBooks)) {
-            await deleteFromShelf(bookShels.To_read, setToReadBooks);
+        if (isInShelf(book, toReadBooks)) {
+            await deleteFromShelf(book, bookShels.To_read, setToReadBooks);
         }
 
-        if (isInShelf(haveReadBooks)) {
-            await deleteFromShelf(bookShels.Have_read, setHaveReadBooks);
+        if (isInShelf(book, haveReadBooks)) {
+            await deleteFromShelf(book, bookShels.Have_read, setHaveReadBooks);
         }
 
-        if (isInShelf(readingNowBooks)) {
-            await deleteFromShelf(bookShels.Reading_now, setReadingNowBooks);
+        if (isInShelf(book, readingNowBooks)) {
+            await deleteFromShelf(book, bookShels.Reading_now, setReadingNowBooks);
         }
 
         switch (shelf) {
             case bookShels.To_read:
-                if (!isInShelf(toReadBooks)) {
-                    await addToShelf(bookShels.To_read, setToReadBooks);
+                if (!isInShelf(book, toReadBooks)) {
+                    await addToShelf(book, bookShels.To_read, setToReadBooks);
                 }
                 break;
             case bookShels.Have_read:
-                if (!isInShelf(haveReadBooks)) {
-                    await addToShelf(bookShels.Have_read, setHaveReadBooks);
+                if (!isInShelf(book, haveReadBooks)) {
+                    await addToShelf(book, bookShels.Have_read, setHaveReadBooks);
                 }
                 break;
             case bookShels.Reading_now:
-                if (!isInShelf(readingNowBooks)) {
-                    await addToShelf(bookShels.Reading_now, setReadingNowBooks);
+                if (!isInShelf(book, readingNowBooks)) {
+                    await addToShelf(book, bookShels.Reading_now, setReadingNowBooks);
                 }
                 break;
             default:
@@ -147,10 +149,25 @@ export const UserBooksProvider = ({ children }: { children: React.ReactNode }) =
         }
     };
 
+    const removeFromShelf = async (book: Book) => {
+        if (!session?.user) return;
+
+        if (isInShelf(book, toReadBooks)) {
+            await deleteFromShelf(book, bookShels.To_read, setToReadBooks);
+        }
+
+        if (isInShelf(book, haveReadBooks)) {
+            await deleteFromShelf(book, bookShels.Have_read, setHaveReadBooks);
+        }
+
+        if (isInShelf(book, readingNowBooks)) {
+            await deleteFromShelf(book, bookShels.Reading_now, setReadingNowBooks);
+        }
+    }
 
 
     return (
-        <UserBooksContext.Provider value={{ favBooks, toggleFavorite, toReadBooks, haveReadBooks, readingNowBooks, toggleInShelf }}>
+        <UserBooksContext.Provider value={{ favBooks, toggleFavorite, toReadBooks, haveReadBooks, readingNowBooks, toggleInShelf, removeFromShelf }}>
             {children}
         </UserBooksContext.Provider>
     );
