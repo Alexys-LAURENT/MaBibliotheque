@@ -3,7 +3,8 @@ const bookShels = {
     Favorites: 0,
     Reading_now: 3,
     To_read: 2,
-    Have_read: 4
+    Have_read: 4,
+    Recommended: 8
 }
 
 export default bookShels;

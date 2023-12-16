@@ -1,35 +1,34 @@
 'use client'
 import React from 'react';
-import Image from 'next/image';
 import type { User } from '../types/user';
 import { signOut } from 'next-auth/react';
+import { Avatar as NextUiAvatar, Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
+const Avatar = ({ user }: { user: User }) => {
 
-const Avatar = ({ user, isMobile }: { user: User, isMobile: boolean }) => {
-    function triggerAvatarPopUp() {
-        document.getElementById('AvatarPopUp')!.classList.toggle('hidden')
-    }
 
-    return isMobile === false ?
-        (
-            <div className='relative'>
-                <div onClick={() => triggerAvatarPopUp()} className='w-11 h-11 rounded-full bg-gray-500 overflow-hidden cursor-pointer'>
-                    <Image src={user.image} alt="user avatar" width={600} height={600} className='w-full' />
+    return (
+        <>
+            <Popover placement="bottom" classNames={{ base: "hidden sm:flex" }} offset={16}>
+                <PopoverTrigger>
+                    <NextUiAvatar className='hover:cursor-pointer hidden sm:flex' isBordered src={user.image} />
+                </PopoverTrigger>
+                <PopoverContent>
+                    <div className="px-1 py-2 justify-center flex-col items-center gap-2 hidden sm:flex">
+                        <p className='text-sm dark:text-bb_text text-bb_primary flex'>{user.name}</p>
 
-                </div>
-                <div id='AvatarPopUp' className='fixed bg-bb_third flex top-[63px] right-2 flex-col p-2 rounded-md hidden transition-opacity max-w-[120px]'>
-                    <p className='text-sm text-bb_text flex'>{user.name}</p>
-                    <hr className='mt-1 mb-1  border-gray-400' />
-                    <button onClick={() => signOut()} className='text-sm text-red-600'>Se déconnecter</button>
-                </div>
-            </div>
-        ) : (
-            <div className='flex items-center gap-3 relative top-[-1px] ml-1'>
+                        <hr className='w-full  border-gray-400' />
+                        <button onClick={() => signOut({ callbackUrl: "/" })} className='text-sm text-red-600'>Se déconnecter</button>
+                    </div>
+                </PopoverContent>
+            </Popover>
+
+            <div className='flex items-center gap-3 relative top-[-1px] ml-1 sm:hidden'>
                 <div className='w-10 h-10 rounded-full bg-gray-500 overflow-hidden'>
-                    <Image src={user.image} alt="user avatar" width={600} height={600} className='w-full' />
+                    <NextUiAvatar isBordered src={user.image} />
                 </div>
-                <p className='text-ellipsis max-w-[180px] overflow-hidden'>{user.name}</p>
             </div>
-        )
+        </>
+    )
 };
 
 export default Avatar;
